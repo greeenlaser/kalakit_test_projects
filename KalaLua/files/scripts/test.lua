@@ -1,6 +1,8 @@
 print("[LUA] script started")
 
--- functions that originate from the kalalua test program
+-- ============================
+-- CPP-DEFINED FUNCTIONS
+-- ============================
 
 -- no namespace
 cpp_hello()
@@ -18,7 +20,9 @@ ns_one.ns_two.ns_three.ns_four.ns_five.string_value("this string came from lua")
 -- advanced lua function
 advanced_lua()
 
--- functions that originate from lua
+-- ============================
+-- LUA-DEFINED FUNCTIONS
+-- ============================
 
 -- no namespace
 function lua_hello()
@@ -60,6 +64,21 @@ l5.l6.l7.l8.l9 = {}
 function l5.l6.l7.l8.l9.string_value(a)
 	print("[LUA] string value: ", a)
 	return a
+end
+
+-- return number of two combined input numbers
+function combine_numbers(a, b)
+	return a + b;
+end
+
+-- return combined strings, using .. for string concatenation
+function combine_strings(a, b, c, d, e)
+	return a .. ", " .. b .. ", " .. c .. ", " .. d .. ", " .. e;
+end
+
+-- return true if a is bigger than b
+function is_bigger(a, b)
+	return a > b
 end
 
 print("[LUA] script ended")

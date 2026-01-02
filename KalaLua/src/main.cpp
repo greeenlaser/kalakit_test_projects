@@ -119,6 +119,31 @@ int main()
 	Lua::CallFunction("bool_value",     "l3.l4",          { false });
 	Lua::CallFunction("string_value",   "l5.l6.l7.l8.l9", { "this string came from cpp" });
 
+	//test returnable int, return 0 on failure
+	auto intResult = Lua::CallFunction<int>(
+		"combine_numbers", 
+		"", 
+		{ 50, 250 }).value_or(0);
+
+	cout << "[CPP] added two ints together and lua returned: '" << intResult << "'\n";
+
+	//test returnable string, return error string on failure
+	auto strResult = Lua::CallFunction<string>(
+		"combine_strings",
+		"",
+		{ "string 1", "string 2", "string 3", "string 4", "string 5"}).value_or("<STRING CONCAT ERROR>");
+
+	cout << "[CPP] added five strings together and lua returned: '" << strResult << "'\n";
+
+	//test returnable bool, return false on failure
+	auto boolResult = Lua::CallFunction<bool>(
+		"is_bigger",
+		"",
+		{ 35, 15 }).value_or(false);
+
+	string_view boolResultValue = boolResult ? "true" : "false";
+	cout << "[CPP] compared a against b and lua returned: '" << boolResultValue << "'\n";
+
 	cout << "ready...\n";
 
 	cin.get();
