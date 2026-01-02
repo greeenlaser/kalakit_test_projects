@@ -15,6 +15,9 @@ ns_other.ns_x.bool_value(true)
 -- deep namespace
 ns_one.ns_two.ns_three.ns_four.ns_five.string_value("this string came from lua")
 
+-- advanced lua function
+advanced_lua()
+
 -- functions that originate from lua
 
 -- no namespace

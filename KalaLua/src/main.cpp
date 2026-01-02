@@ -93,6 +93,17 @@ int main()
 		"ns_one.ns_two.ns_three.ns_four.ns_five",
 		String_Value);
 
+	//test advanced lua function
+	Lua::RegisterFunction(
+		"advanced_lua",
+		"",
+		function<int(lua_State*)>(
+			[](lua_State* L) -> int
+			{
+				cout << "[CPP] hello from advanced lua function\n";
+				return 0;
+			}));
+
 	//load a lua script
 	Lua::LoadScript(
 		{
