@@ -1,0 +1,33 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "MSVC",
+	"compiler-id" : "MSVC",
+	"compiler-simulate-id" : "",
+	"config" : "Release",
+	"cxx-modules" : {},
+	"database-info" : null,
+	"dir-cur-bld" : "C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release",
+	"dir-cur-src" : "C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua",
+	"dir-top-bld" : "C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release",
+	"dir-top-src" : "C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : 
+	[
+		"C:\\Users\\greenlaser\\Documents\\_cpp\\kalakit_test_projects\\KalaLua\\include",
+		"C:\\Users\\greenlaser\\Documents\\_cpp\\kalakit_test_projects\\KalaLua\\_external_shared",
+		"C:\\Users\\greenlaser\\Documents\\_cpp\\kalakit_test_projects\\KalaLua\\_external_shared\\KalaLua\\include",
+		"C:\\Users\\greenlaser\\Documents\\_cpp\\kalakit_test_projects\\KalaLua\\_external_shared\\lua\\src"
+	],
+	"language" : "CXX",
+	"linked-target-dirs" : [],
+	"module-dir" : "C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release/CMakeFiles/test-project.dir",
+	"sources" : 
+	{
+		"CMakeFiles/test-project.dir/src/main.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/src/main.cpp"
+		}
+	}
+}

@@ -1,0 +1,1 @@
+This is a repository that collects [KalaKit](https://github.com/KalaKit) test projects to help you learn how to use them with real working example projects following the up to date code and binaries from their libraries. Each folder is fully standalone and dedicated only to the target library.

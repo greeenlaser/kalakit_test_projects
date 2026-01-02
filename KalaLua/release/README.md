@@ -1,0 +1,1 @@
+This is a standalone test project showcasing how to use [KalaLua](https://github.com/kalakit/kalalua). Follow src/main.cpp to see example code.
