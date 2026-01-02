@@ -1,5 +1,0 @@
-C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release/CMakeFiles/test-project.dir
-C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release/CMakeFiles/package.dir
-C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release/CMakeFiles/package_source.dir
-C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release/CMakeFiles/edit_cache.dir
-C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release/CMakeFiles/rebuild_cache.dir

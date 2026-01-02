@@ -3,9 +3,9 @@ out/
 build/
 .vs/
 
-# Release and Debug in root folder
-/release/
-/debug/
+# Release and Debug in project folders
+/KalaLua/release/
+/KalaLua/debug/
 
 # Large files
 *.pdb

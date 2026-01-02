@@ -22,63 +22,91 @@ using std::string_view;
 using std::to_string;
 using std::setprecision;
 
+static void Double_Add(double a, double b)
+{
+	double result = a + b;
+	cout << "[CPP] added double b to double a: '" << setprecision(15) << result << "'\n";
+}
+static void Float_Subtract(float a, float b)
+{
+	float result = a - b;
+	cout << "[CPP] subtracted float b from float a: '" << setprecision(6) << result << "'\n";
+}
+static void Int_Multiply(int a, int b)
+{
+	int result = a * b;
+	cout << "[CPP] multiplied int a by int b: '" << setprecision(0) << result << "'\n";
+}
+static void Bool_Value(bool a)
+{
+	string value = a ? "true" : "false";
+
+	cout << "[CPP] bool value: '"  << value << "'\n";
+}
+static void String_Value(string a)
+{
+	cout << "[CPP] string value: '" << a << "'\n";
+}
+
 int main()
 {
 	Lua::Initialize();
 
+	//test functional + no args + no namespaces
 	Lua::RegisterFunction(
-		"double_add",
-		"kalalua_test",
-		function<void(double, double)>([](double a, double b)
-			{ 
-				double result = a + b;
-				cout << "[CPP] added double b to double a: '" << setprecision(15) << result << "'\n";
-			}));
+		"cpp_hello",
+		"",
+		function<void()>([]() { cout << "[CPP] hello from cpp!\n"; }));
 
+	//test lambda + double + parent namespace.
+	//note: lambdas without args are not supported in KalaLua,
+	//functionals and free functions can be ran with no arguments
+	Lua::RegisterFunction<double, double>(
+		"double_add",
+		"ns_main",
+		[](double a, double b) 
+			{ 
+				Double_Add(a, b); 
+			});
+
+	//test free function + float + nested namespace
 	Lua::RegisterFunction(
 		"float_subtract",
-		"kalalua_test",
-		function<void(float, float)>([](float a, float b)
-			{
-				float result = a - b;
-				cout << "[CPP] subtracted float b from float a: '" << setprecision(6) << result << "'\n";
-			}));
+		"ns_main.ns_nest",
+		Float_Subtract);
 
+	//test int + different namespace
 	Lua::RegisterFunction(
 		"int_multiply",
-		"kalalua_test",
-		function<void(int, int)>([](int a, int b)
-			{
-				int result = a * b;
-				cout << "[CPP] multiplied int a by int b: '" << setprecision(0) << result << "'\n";
-			}));
+		"ns_other.ns_x",
+		Int_Multiply);
 
+	//test bool + reused namespace
 	Lua::RegisterFunction(
-		"double_divide",
-		"kalalua_test",
-		function<void(double, double)>([](double a, double b)
-			{
-				double result = a / b;
-				cout << "[CPP] divided double a by double b: '" << setprecision(15) << result << "'\n";
-			}));
+		"bool_value",
+		"ns_other.ns_x",
+		Bool_Value);
 
+	//test string + deep namespace
 	Lua::RegisterFunction(
-		"string_print",
-		"kalalua_test",
-		function<void(string, string)>([](string a, string b)
-			{
-				string result = a + ", " + b;
-				cout << "[CPP] added string b to string a: '" << result << "'\n";
-			}));
+		"string_value",
+		"ns_one.ns_two.ns_three.ns_four.ns_five",
+		String_Value);
 
+	//load a lua script
 	Lua::LoadScript(
 		{
 			path(current_path() / "files" / "scripts" / "test.lua").string()
 		});
 
-	Lua::CallFunction("luaHello", "");
+	//test lua functions with the same structure
 
-	Lua::CallFunction("bool_compare", "", { 550.4f, 180.565f });
+	Lua::CallFunction("lua_hello",      "");
+	Lua::CallFunction("double_add",     "l1",             { 53546750.534674, 1834570.56354675 });
+	Lua::CallFunction("float_subtract", "l1.l2",          { 550.4f, 180.565f });
+	Lua::CallFunction("int_multiply",   "l3.l4",          { 35467, 576 });
+	Lua::CallFunction("bool_value",     "l3.l4",          { false });
+	Lua::CallFunction("string_value",   "l5.l6.l7.l8.l9", { "this string came from cpp" });
 
 	cout << "ready...\n";
 

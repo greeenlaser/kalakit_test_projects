@@ -1,8 +1,0 @@
-# ninja log v7
-5	31	7890822222253953	C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release/CMakeFiles/cmake.verify_globs	d09c8f08ac067769
-32	223	7890822222541046	CMakeFiles/test-project.dir/src/main.cpp.obj.ddi	422b03a5a91ce80e
-224	255	7890822224722099	CMakeFiles/test-project.dir/CXX.dd	c737649c3776e44e
-224	255	7890822224722099	C:/Users/greenlaser/Documents/_cpp/kalakit_test_projects/KalaLua/release/CMakeFiles/test-project.dir/CXXModules.json	c737649c3776e44e
-224	255	7890822224722099	CMakeFiles/test-project.dir/src/main.cpp.obj.modmap	c737649c3776e44e
-256	2808	7890822224778116	CMakeFiles/test-project.dir/src/main.cpp.obj	472851593ba2506f
-2809	3234	7890822250310948	test-project.exe	cb0b293466cb1184
