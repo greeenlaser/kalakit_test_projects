@@ -4,18 +4,22 @@ print("[LUA] script started")
 -- CPP-DEFINED FUNCTIONS
 -- ============================
 
--- no namespace
+-- functional + no args + no namespaces
 cpp_hello()
--- parent namespace
-ns_main.double_add(5.2435762457, 155.2472345734575)
--- nested namespace
-ns_main.ns_nest.float_subtract(55666.4423, 4564.88)
--- different namespace
-ns_other.ns_x.int_multiply(345, 5566)
--- reused namespace
+-- free function + double
+double_add(5.2435762457, 155.2472345734575)
+-- float + parent namespace
+ns_main.float_subtract(55666.4423, 4564.88)
+-- int + nested namespace
+ns_main.ns_nest.int_multiply(345, 5566)
+-- bool + reused namespace
 ns_other.ns_x.bool_value(true)
--- deep namespace
+-- string + deep namespace
 ns_one.ns_two.ns_three.ns_four.ns_five.string_value("this string came from lua")
+
+-- get a response back from cpp
+local result = cpp_multiply(5, 15)
+print("[LUA] cpp multiplied a and b: ", result)
 
 -- advanced lua function
 advanced_lua()
@@ -24,30 +28,30 @@ advanced_lua()
 -- LUA-DEFINED FUNCTIONS
 -- ============================
 
--- no namespace
+-- print + no namespace
 function lua_hello()
 	print("[LUA] hello from lua!")
 end
 -- parent namespace
 l1 = {} -- create namespace and overwrite if it already exists
-function l1.double_add(a, b)
+function l1.number_add(a, b)
 	local result = a + b
-	print("[LUA] added double b to double a: ", result)
+	print("[LUA] added number b to number a: ", result)
 	return result
 end
 -- nested namespace
 l1.l2 = l1.l2 or {} -- create namespace and reuse if it already exists
-function l1.l2.float_subtract(a, b)
+function l1.l2.number_subtract(a, b)
 	local result = a - b
-	print("[LUA] subtracted float b from float a: ", result)
+	print("[LUA] subtracted number b from number a: ", result)
 	return result
 end
 -- different namespace
 l3 = {}
 l3.l4 = {}
-function l3.l4.int_multiply(a, b)
+function l3.l4.number_multiply(a, b)
 	local result = a * b
-	print("[LUA] multiplied int a by int b: ", result)
+	print("[LUA] multiplied number a by number b: ", result)
 	return result
 end
 -- reused namespace

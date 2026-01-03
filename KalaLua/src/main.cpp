@@ -48,6 +48,11 @@ static void String_Value(string a)
 	cout << "[CPP] string value: '" << a << "'\n";
 }
 
+static float Return_Multiply_To_Lua(float a, float b)
+{
+	return a * b;
+}
+
 int main()
 {
 	Lua::Initialize();
@@ -58,27 +63,22 @@ int main()
 		"",
 		function<void()>([]() { cout << "[CPP] hello from cpp!\n"; }));
 
-	//test lambda + double + parent namespace.
-	//note: lambdas without args are not supported in KalaLua,
-	//functionals and free functions can be ran with no arguments
-	Lua::RegisterFunction<double, double>(
+	//test free function + double
+	Lua::RegisterFunction(
 		"double_add",
-		"ns_main",
-		[](double a, double b) 
-			{ 
-				Double_Add(a, b); 
-			});
+		"",
+		Double_Add);
 
-	//test free function + float + nested namespace
+	//test float + parent namespace
 	Lua::RegisterFunction(
 		"float_subtract",
-		"ns_main.ns_nest",
+		"ns_main",
 		Float_Subtract);
 
-	//test int + different namespace
+	//test int + nested namespace
 	Lua::RegisterFunction(
 		"int_multiply",
-		"ns_other.ns_x",
+		"ns_main.ns_nest",
 		Int_Multiply);
 
 	//test bool + reused namespace
@@ -104,6 +104,12 @@ int main()
 				return 0;
 			}));
 
+	//test return float to lua
+	Lua::RegisterFunction(
+		"cpp_multiply",
+		"",
+		Return_Multiply_To_Lua);
+
 	//load a lua script
 	Lua::LoadScript(
 		{
@@ -112,12 +118,12 @@ int main()
 
 	//test lua functions with the same structure
 
-	Lua::CallFunction("lua_hello",      "");
-	Lua::CallFunction("double_add",     "l1",             { 53546750.534674, 1834570.56354675 });
-	Lua::CallFunction("float_subtract", "l1.l2",          { 550.4f, 180.565f });
-	Lua::CallFunction("int_multiply",   "l3.l4",          { 35467, 576 });
-	Lua::CallFunction("bool_value",     "l3.l4",          { false });
-	Lua::CallFunction("string_value",   "l5.l6.l7.l8.l9", { "this string came from cpp" });
+	Lua::CallFunction("lua_hello",       "");
+	Lua::CallFunction("number_add",      "l1",             { 53546750.534674, 1834570.56354675 });
+	Lua::CallFunction("number_subtract", "l1.l2",          { 550.4f, 180.565f });
+	Lua::CallFunction("number_multiply", "l3.l4",          { 35467, 576 });
+	Lua::CallFunction("bool_value",      "l3.l4",          { false });
+	Lua::CallFunction("string_value",    "l5.l6.l7.l8.l9", { "this string came from cpp" });
 
 	//test returnable int, return 0 on failure
 	auto intResult = Lua::CallFunction<int>(
