@@ -77,12 +77,11 @@ target_include_directories(test-project PRIVATE
 )
 
 # Preprocessor Defines
-target_compile_definitions(test-project PRIVATE 
-	LIB_EXPORT
-    WIN32_LEAN_AND_MEAN
-    NOMINMAX
-	UNICODE
-	_UNICODE
+target_compile_definitions(test-project PRIVATE
+	WIN32_LEAN_AND_MEAN # cleaner windows.h
+	NOMINMAX            # skips min/max windows macros in favor of the std variants
+	UNICODE             # selects wide api variants over ansi for UTF16 windows functions
+	_UNICODE            # uses wide text types in the C runtime layer
 )
 
 # Link libraries

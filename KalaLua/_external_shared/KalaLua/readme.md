@@ -1,6 +1,6 @@
 # KalaLua
 
-**KalaLua** is a C++ 20 wrapper library around Lua for Windows (Linux coming in the future) that allows you to route Lua calls to one middleman library without needing Lua itself in any way inside your own program.
+**KalaLua** is a C++ 20 wrapper library around the Lua source code for Windows (Linux coming in the future) that allows you register C++ functions in **KalaLua** that can be called in your Lua script or to call Lua-created functions through **KalaLua** without needing to ever touch Lua source code itself in any way inside your own program unless you want Lua state pointer access.
 
 An example project showcasing how to use **KalaLua** has been created at the [kalakit_test_projects repository](https://github.com/greeenlaser/kalakit_test_projects/tree/main/KalaLua).
 
@@ -10,14 +10,15 @@ An example project showcasing how to use **KalaLua** has been created at the [ka
 
 Just call Lua::Initialize to start and Lua::Shutdown to clean up resources and quit.
 
-### Clean from Lua source code
+### No Lua source code needed
 
-The Lua source code is compiled to the Lua binary but your process does not need to link to it or use any of its source code unless you wish to access the Lua state pointer. Only the KalaLua binary depends on the Lua binary.
+The Lua source code is compiled to the Lua binary but your program does not need to link to it or use any of its source code unless you wish to access the Lua state pointer. Only the KalaLua binary depends on the Lua binary.
 
-### LuaVar-bound arguments 
+### LuaVar-bound variables 
 
-Passed arguments are safely bound-checked against the LuaVar variant.
-Allowed arguments:
+Both CallFunction and the three non-lua RegisterFunction functions accept any number of arguments, or none, as long as theyre within the LuaVar variant range. Passed variables are safely bound-checked against the LuaVar variant.
+
+Allowed variables:
 - int
 - float
 - double
@@ -28,21 +29,19 @@ Allowed arguments:
 
 You can call and register functions with no namespace, single parent namespace or nested namespace.
 
-Pass "" to the namespace field to not assign a namespace, pass "example" to assign a single parent namespace, pass "example.examplenest" to assign a nested namespace.
+- pass "" to the namespace field to not assign a namespace
+- pass "example" to assign a single parent namespace
+- pass "example.examplenest" to assign a nested namespace.
 
-### Arguments
-
-Both CallFunction and the three non-lua RegisterFunction functions accept any number of arguments, or none, as long as theyre within the LuaVar variant range.
-
-### Three ways to register functions for use in Lua
+### Register functions for use in Lua
 
 Lua::RegisterFunction accepts functionals and free functions and can return void or one of the LuaVar variables.
 
-There is also a fourth advanced caller which expects you to handle lua_State, this is only recommended for advanced users as it requires you to link against the Lua dll and use Lua source code.
+There is also a third advanced caller which expects you to handle the Lua state pointer, this is only recommended for advanced users as it requires you to link against the Lua source binary and use Lua source code.
 
-### Two ways to call Lua functions
+### Call Lua functions
 
-You can call a Lua function with Lua::CallFunction which returns nothing or one of the possible LuaVar variables.
+You can call a Lua function with Lua::CallFunction which returns nothing or one of the possible LuaVar variables depending on how you've set it up in your Lua script.
 
 ---
 
