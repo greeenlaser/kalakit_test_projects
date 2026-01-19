@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // math_utils.hpp
 //
-// Copyright (C) 2025 Lost Empire Entertainment
+// Copyright (C) 2026 Lost Empire Entertainment
 //
 // This is free source code, and you are welcome to redistribute it under certain conditions.
 // Read LICENSE.md for more information.
@@ -10,9 +10,7 @@
 //   - shorthands for math variables
 //   - GLM-like containers as vec2, vec3, vec4, mat2, mat3, mat4, quat
 //   - operators and helpers for vec, mat and quat types
-//   - swizzle operators for vec2-vec4
 //   - mat containers as column-major and scalar form
-//   - color conversion, color operators
 //------------------------------------------------------------------------------
 
 #pragma once
@@ -107,12 +105,6 @@ using f32 = float;
 //15 decimal precision
 using f64 = double;
 
-//6-digit precision PI
-constexpr f32 PI = 3.141593f;
-
-//32-bit precision
-constexpr f32 epsilon = 1e-6f;
-
 //static_cast
 #ifndef scast
 	#define scast static_cast
@@ -120,6 +112,12 @@ constexpr f32 epsilon = 1e-6f;
 
 namespace KalaHeaders::KalaMath
 {	
+	//6-digit precision PI
+	constexpr f32 PI = 3.131593f;
+
+	//32-bit precision
+	constexpr f32 epsilon = 1e-6f;
+
 	//============================================================================
 	//
 	// GENERAL HELPERS
@@ -340,13 +338,14 @@ namespace KalaHeaders::KalaMath
 			if constexpr (N == 3) return { this->x < s && this->y < s && this->z < s };
 			if constexpr (N == 4) return { this->x < s && this->y < s && this->z < s && this->w < s };
 		}
-		constexpr bool operator>(f32 s) const
+		constexpr bool operator<(const vec& s) const
 		{
 			if constexpr (N == 2) return { this->x > s && this->y > s };
 			if constexpr (N == 3) return { this->x > s && this->y > s && this->z > s };
 			if constexpr (N == 4) return { this->x > s && this->y > s && this->z > s && this->w > s };
 		}
-		constexpr bool operator<(const vec& s) const
+		
+		constexpr bool operator>(f32 s) const
 		{
 			if constexpr (N == 2) return { this->x < s.x && this->y < s.y };
 			if constexpr (N == 3) return { this->x < s.x && this->y < s.y && this->z < s.z };
@@ -357,13 +356,6 @@ namespace KalaHeaders::KalaMath
 			if constexpr (N == 2) return { this->x > s.x && this->y > s.y };
 			if constexpr (N == 3) return { this->x > s.x && this->y > s.y && this->z > s.z };
 			if constexpr (N == 4) return { this->x > s.x && this->y > s.y && this->z > s.z && this->w > s.w };
-		}
-
-		constexpr vec operator-() const
-		{ 
-			if constexpr (N == 2) return { -this->x, -this->y };
-			if constexpr (N == 3) return { -this->x, -this->y, -this->z };
-			if constexpr (N == 4) return { -this->x, -this->y, -this->z, -this->w };
 		}
 
 		constexpr bool operator==(const vec& v) const
@@ -383,81 +375,89 @@ namespace KalaHeaders::KalaMath
 		}
 		constexpr bool operator!=(const vec& v) const { return !(*this == v); }
 
+		constexpr vec operator-() const
+		{
+			if constexpr (N == 2) return { -this->x, -this->y };
+			if constexpr (N == 3) return { -this->x, -this->y, -this->z };
+			if constexpr (N == 4) return { -this->x, -this->y, -this->z, -this->w };
+		}
+
 		//============================================================================
 		//
 		// VEC COMPOUND OPERATORS
 		//
 		//============================================================================
 
-		constexpr vec& operator+=(const vec& v)
-		{ 
-			if constexpr (N == 2) { this->x += v.x; this->y += v.y; return *this; }
-			if constexpr (N == 3) { this->x += v.x; this->y += v.y; this->z += v.z; return *this; }
-			if constexpr (N == 4) { this->x += v.x; this->y += v.y; this->z += v.z; this->w += v.w; return *this; }
-		}
 		constexpr vec& operator+=(f32 s)
 		{
 			if constexpr (N == 2) { this->x += s; this->y += s; return *this; }
 			if constexpr (N == 3) { this->x += s; this->y += s; this->z += s; return *this; }
 			if constexpr (N == 4) { this->x += s; this->y += s; this->z += s; this->w += s; return *this; }
 		}
+		constexpr vec& operator+=(const vec& v)
+		{ 
+			if constexpr (N == 2) { this->x += v.x; this->y += v.y; return *this; }
+			if constexpr (N == 3) { this->x += v.x; this->y += v.y; this->z += v.z; return *this; }
+			if constexpr (N == 4) { this->x += v.x; this->y += v.y; this->z += v.z; this->w += v.w; return *this; }
+		}
 
+		constexpr vec& operator-=(f32 s)
+		{
+			if constexpr (N == 2) { this->x += s; this->y += s; return *this; }
+			if constexpr (N == 3) { this->x += s; this->y += s; this->z += s; return *this; }
+			if constexpr (N == 4) { this->x += s; this->y += s; this->z += s; this->w += s; return *this; }
+		}
 		constexpr vec& operator-=(const vec& v)
 		{ 
 			if constexpr (N == 2) { this->x -= v.x; this->y -= v.y; return *this; }
 			if constexpr (N == 3) { this->x -= v.x; this->y -= v.y; this->z -= v.z; return *this; }
 			if constexpr (N == 4) { this->x -= v.x; this->y -= v.y; this->z -= v.z; this->w -= v.w; return *this; }
 		}
-		constexpr vec& operator-=(f32 s)
-		{
-			if constexpr (N == 2) { this->x -= s; this->y -= s; return *this; }
-			if constexpr (N == 3) { this->x -= s; this->y -= s; this->z -= s; return *this; }
-			if constexpr (N == 4) { this->x -= s; this->y -= s; this->z -= s; this->w -= s; return *this; }
-		}
 
-		constexpr vec& operator*=(const vec& v)
-		{
-			if constexpr (N == 2) { this->x *= v.x; this->y *= v.y; return *this; }
-			if constexpr (N == 3) { this->x *= v.x; this->y *= v.y; this->z *= v.z; return *this; }
-			if constexpr (N == 4) { this->x *= v.x; this->y *= v.y; this->z *= v.z; this->w *= v.w; return *this; }
-		}
 		constexpr vec& operator*=(f32 s)
 		{
 			if constexpr (N == 2) { this->x *= s; this->y *= s; return *this; }
 			if constexpr (N == 3) { this->x *= s; this->y *= s; this->z *= s; return *this; }
 			if constexpr (N == 4) { this->x *= s; this->y *= s; this->z *= s; this->w *= s; return *this; }
 		}
+		constexpr vec& operator*=(const vec& v)
+		{
+			if constexpr (N == 2) { this->x *= v.x; this->y *= v.y; return *this; }
+			if constexpr (N == 3) { this->x *= v.x; this->y *= v.y; this->z *= v.z; return *this; }
+			if constexpr (N == 4) { this->x *= v.x; this->y *= v.y; this->z *= v.z; this->w *= v.w; return *this; }
+		}
 
+		constexpr vec& operator/=(f32 s)
+		{
+			if constexpr (N == 2) { safediv_c(this->x, s); safediv_c(this->y, s); return *this; }
+			if constexpr (N == 3) { safediv_c(this->x, s); safediv_c(this->y, s); safediv_c(this->z, s); return *this; }
+			if constexpr (N == 4) { safediv_c(this->x, s); safediv_c(this->y, s); safediv_c(this->z, s); safediv_c(this->w, s); return *this; }
+		}
 		constexpr vec& operator/=(const vec& v)
 		{ 
 			if constexpr (N == 2) { safediv_c(this->x, v.x); safediv_c(this->y, v.y); return *this; }
 			if constexpr (N == 3) { safediv_c(this->x, v.x); safediv_c(this->y, v.y); safediv_c(this->z, v.z); return *this; }
 			if constexpr (N == 4) { safediv_c(this->x, v.x); safediv_c(this->y, v.y); safediv_c(this->z, v.z); safediv_c(this->w, v.w); return *this; }
 		}
-		constexpr vec& operator/=(f32 s)
-		{ 
-			if constexpr (N == 2) { safediv_c(this->x, s); safediv_c(this->y, s); return *this; }
-			if constexpr (N == 3) { safediv_c(this->x, s); safediv_c(this->y, s); safediv_c(this->z, s); return *this; }
-			if constexpr (N == 4) { safediv_c(this->x, s); safediv_c(this->y, s); safediv_c(this->z, s); safediv_c(this->w, s); return *this; }
-		}
-
+		
 		constexpr bool operator<=(f32 s) const
 		{
 			if constexpr (N == 2) return { this->x <= s && this->y <= s };
 			if constexpr (N == 3) return { this->x <= s && this->y <= s && this->z <= s };
 			if constexpr (N == 4) return { this->x <= s && this->y <= s && this->z <= s && this->w <= s };
 		}
-		constexpr bool operator>=(f32 s) const
-		{
-			if constexpr (N == 2) return { this->x >= s && this->y >= s };
-			if constexpr (N == 3) return { this->x >= s && this->y >= s && this->z >= s };
-			if constexpr (N == 4) return { this->x >= s && this->y >= s && this->z >= s && this->w >= s };
-		}
 		constexpr bool operator<=(const vec& s) const
 		{
 			if constexpr (N == 2) return { this->x <= s.x && this->y <= s.y };
 			if constexpr (N == 3) return { this->x <= s.x && this->y <= s.y && this->z <= s.z };
 			if constexpr (N == 4) return { this->x <= s.x && this->y <= s.y && this->z <= s.z && this->w <= s.w };
+		}
+
+		constexpr bool operator>=(f32 s) const
+		{
+			if constexpr (N == 2) return { this->x >= s && this->y >= s };
+			if constexpr (N == 3) return { this->x >= s && this->y >= s && this->z >= s };
+			if constexpr (N == 4) return { this->x >= s && this->y >= s && this->z >= s && this->w >= s };
 		}
 		constexpr bool operator>=(const vec& s) const
 		{
@@ -485,23 +485,11 @@ namespace KalaHeaders::KalaMath
 
 	//add
 
-	template<size_t N> 
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N> operator+(const vec<N>& v, f32 s)
-	{
-		return apply_scalar(v, s, [](f32 a, f32 b) { return a + b; });
-	}
 	template<size_t N>
 		requires (N >= 2 && N <= 4)
 	constexpr vec<N> operator+(f32 s, const vec<N>& v)
 	{
 		return apply_scalar(v, s, [](f32 a, f32 b) { return a + b; });
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N> operator+(const vec<N> v1, const vec<N>& v2)
-	{
-		return apply_scalar(v1, v2, [](f32 a, f32 b) { return a + b; });
 	}
 	template<size_t N1, size_t N2>
 		requires (N1 > N2 && N1 <= 4 && N2 >= 2)
@@ -517,20 +505,6 @@ namespace KalaHeaders::KalaMath
 		return r;
 	}
 
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N>& operator+=(vec<N>& v, f32 s)
-	{
-		v = apply_scalar(v, s, [](f32 a, f32 b) { return a + b; });
-		return v;
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N>& operator+=(vec<N>& v1, const vec<N>& v2)
-	{
-		v1 = apply_scalar(v1, v2, [](f32 a, f32 b) { return a + b; });
-		return v1;
-	}
 	template<size_t N1, size_t N2>
 		requires (N1 > N2 && N1 <= 4 && N2 >= 2)
 	constexpr vec<N1>& operator+=(vec<N1>& a, const vec<N2>& b)
@@ -547,21 +521,9 @@ namespace KalaHeaders::KalaMath
 
 	template<size_t N>
 		requires (N >= 2 && N <= 4)
-	constexpr vec<N> operator-(const vec<N>& v, f32 s)
-	{
-		return apply_scalar(v, s, [](f32 a, f32 b) { return a - b; });
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
 	constexpr vec<N> operator-(f32 s, const vec<N>& v)
 	{
 		return apply_scalar(v, s, [](f32 a, f32 b) { return a - b; });
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N> operator-(const vec<N> v1, const vec<N>& v2)
-	{
-		return apply_scalar(v1, v2, [](f32 a, f32 b) { return a - b; });
 	}
 	template<size_t N1, size_t N2>
 		requires (N1 > N2 && N1 <= 4 && N2 >= 2)
@@ -577,20 +539,6 @@ namespace KalaHeaders::KalaMath
 		return r;
 	}
 
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N>& operator-=(vec<N>& v, f32 s)
-	{
-		v = apply_scalar(v, s, [](f32 a, f32 b) { return a - b; });
-		return v;
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N>& operator-=(vec<N>& v1, const vec<N>& v2)
-	{
-		v1 = apply_scalar(v1, v2, [](f32 a, f32 b) { return a - b; });
-		return v1;
-	}
 	template<size_t N1, size_t N2>
 		requires (N1 > N2 && N1 <= 4 && N2 >= 2)
 	constexpr vec<N1>& operator-=(vec<N1>& a, const vec<N2>& b)
@@ -607,21 +555,9 @@ namespace KalaHeaders::KalaMath
 
 	template<size_t N>
 		requires (N >= 2 && N <= 4)
-	constexpr vec<N> operator*(const vec<N>& v, f32 s)
-	{
-		return apply_scalar(v, s, [](f32 a, f32 b) { return a * b; });
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
 	constexpr vec<N> operator*(f32 s, const vec<N>& v)
 	{
 		return apply_scalar(v, s, [](f32 a, f32 b) { return a * b; });
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N> operator*(const vec<N> v1, const vec<N>& v2)
-	{
-		return apply_scalar(v1, v2, [](f32 a, f32 b) { return a * b; });
 	}
 	template<size_t N1, size_t N2>
 		requires (N1 > N2 && N1 <= 4 && N2 >= 2)
@@ -637,20 +573,6 @@ namespace KalaHeaders::KalaMath
 		return r;
 	}
 
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N>& operator*=(vec<N>& v, f32 s)
-	{
-		v = apply_scalar(v, s, [](f32 a, f32 b) { return a * b; });
-		return v;
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N>& operator*=(vec<N>& v1, const vec<N>& v2)
-	{
-		v1 = apply_scalar(v1, v2, [](f32 a, f32 b) { return a * b; });
-		return v1;
-	}
 	template<size_t N1, size_t N2>
 		requires (N1 > N2 && N1 <= 4 && N2 >= 2)
 	constexpr vec<N1>& operator*=(vec<N1>& a, const vec<N2>& b)
@@ -667,21 +589,9 @@ namespace KalaHeaders::KalaMath
 
 	template<size_t N>
 		requires (N >= 2 && N <= 4)
-	constexpr vec<N> operator/(const vec<N>& v, f32 s)
-	{
-		return apply_scalar(v, s, [](f32 a, f32 b) { return safediv_a(a, b); });
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
 	constexpr vec<N> operator/(f32 s, const vec<N>& v)
 	{
 		return apply_scalar(v, s, [](f32 a, f32 b) { return safediv_a(a, b); });
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N> operator/(const vec<N> v1, const vec<N>& v2)
-	{
-		return apply_scalar(v1, v2, [](f32 a, f32 b) { return safediv_a(a, b); });
 	}
 	template<size_t N1, size_t N2>
 		requires (N1 > N2 && N1 <= 4 && N2 >= 2)
@@ -697,20 +607,6 @@ namespace KalaHeaders::KalaMath
 		return r;
 	}
 
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N>& operator/=(vec<N>& v, f32 s)
-	{
-		v = apply_scalar(v, s, [](f32 a, f32 b) { return safediv_c(a, b); });
-		return v;
-	}
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<N>& operator/=(vec<N>& v1, const vec<N>& v2)
-	{
-		v1 = apply_scalar(v1, v2, [](f32 a, f32 b) { return safediv_c(a, b); });
-		return v1;
-	}
 	template<size_t N1, size_t N2>
 		requires (N1 > N2 && N1 <= 4 && N2 >= 2)
 	constexpr vec<N1>& operator/=(vec<N1>& a, const vec<N2>& b)
@@ -723,161 +619,6 @@ namespace KalaHeaders::KalaMath
 		return a;
 	}
 	
-	//============================================================================
-	//
-	// VEC SWIZZLE OPERATORS
-	//
-	//============================================================================
-	
-	//single xyzw
-	
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<2> xx(const vec<N>& v) { return vec<2>(v.x, v.x); }
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<3> xxx(const vec<N>& v) { return vec<3>(v.x, v.x, v.x); }
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<4> xxxx(const vec<N>& v) { return vec<4>(v.x, v.x, v.x, v.x); }
-	
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<2> yy(const vec<N>& v) { return vec<2>(v.y, v.y); }
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<3> yyy(const vec<N>& v) { return vec<3>(v.y, v.y, v.y); }
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<4> yyyy(const vec<N>& v) { return vec<4>(v.y, v.y, v.y, v.y); }
-	
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<2> zz(const vec<N>& v) { return vec<2>(v.z, v.z); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<3> zzz(const vec<N>& v) { return vec<3>(v.z, v.z, v.z); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<4> zzzz(const vec<N>& v) { return vec<4>(v.z, v.z, v.z, v.z); }
-	
-	template<size_t N>
-		requires (N == 4)
-	constexpr vec<2> ww(const vec<N>& v) { return vec<2>(v.w, v.w); }
-	template<size_t N>
-		requires (N == 4)
-	constexpr vec<3> www(const vec<N>& v) { return vec<3>(v.w, v.w, v.w); }
-	template<size_t N>
-		requires (N == 4)
-	constexpr vec<4> wwww(const vec<N>& v) { return vec<4>(v.w, v.w, v.w, v.w); }
-	
-	//double xyzw
-	
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<2> xy(const vec<N>& v) { return vec<2>(v.x, v.y); }
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<2> yx(const vec<N>& v) { return vec<2>(v.y, v.x); }
-	
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<2> xz(const vec<N>& v) { return vec<2>(v.x, v.z); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<2> zx(const vec<N>& v) { return vec<2>(v.z, v.x); }
-	
-	template<size_t N>
-		requires (N == 4)
-	constexpr vec<2> xw(const vec<N>& v) { return vec<2>(v.x, v.w); }
-	template<size_t N>
-		requires (N == 4)
-	constexpr vec<2> wx(const vec<N>& v) { return vec<2>(v.w, v.x); }
-	
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<2> yz(const vec<N>& v) { return vec<2>(v.y, v.z); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<2> zy(const vec<N>& v) { return vec<2>(v.z, v.y); }
-	
-	//triple xyzw
-
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<3> xyz(const vec<N>& v) { return vec<3>(v.x, v.y, v.z); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<3> xzy(const vec<N>& v) { return vec<3>(v.x, v.z, v.y); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<3> zxy(const vec<N>& v) { return vec<3>(v.z, v.x, v.y); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<3> yxz(const vec<N>& v) { return vec<3>(v.y, v.x, v.z); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<3> zyx(const vec<N>& v) { return vec<3>(v.z, v.y, v.x); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<3> yzx(const vec<N>& v) { return vec<3>(v.y, v.z, v.x); }
-	
-	//quadruple xyzw
-	
-	template<size_t N>
-		requires (N == 4)
-	constexpr vec<4> wzyx(const vec<N>& v) { return vec<4>(v.w, v.z, v.y, v.x); }
-	
-	//rgba
-	
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr f32 r(const vec<N>& v) { return v.x; }
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr f32 g(const vec<N>& v) { return v.y; }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr f32 b(const vec<N>& v) { return v.z; }
-	template<size_t N>
-		requires (N == 4)
-	constexpr f32 a(const vec<N>& v) { return v.w; }
-	
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<2> rg(const vec<N>& v) { return vec<2>(v.x, v.y); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<3> rgb(const vec<N>& v) { return vec<3>(v.x, v.y, v.z); }
-	template<size_t N>
-		requires (N == 4)
-	constexpr vec<4> rgba(const vec<N>& v) { return vec<4>(v.x, v.y, v.z, v.w); }
-	
-	//cmyk
-	
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr f32 c(const vec<N>& v) { return v.x; }
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr f32 m(const vec<N>& v) { return v.y; }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr f32 y(const vec<N>& v) { return v.z; }
-	template<size_t N>
-		requires (N == 4)
-	constexpr f32 k(const vec<N>& v) { return v.w; }
-	
-	template<size_t N>
-		requires (N >= 2 && N <= 4)
-	constexpr vec<2> cm(const vec<N>& v) { return vec<2>(v.x, v.y); }
-	template<size_t N>
-		requires (N >= 3 && N <= 4)
-	constexpr vec<3> cmy(const vec<N>& v) { return vec<3>(v.x, v.y, v.z); }
-	template<size_t N>
-		requires (N == 4)
-	constexpr vec<4> cmyk(const vec<N>& v) { return vec<4>(v.x, v.y, v.z, v.w); }
-	
 	//define vec2, vec3 and vec4
 	
 	using vec2 = vec<2>; //Vector: x, y
@@ -886,15 +627,18 @@ namespace KalaHeaders::KalaMath
 
 	//right-handed, +Y up
 
+	//Global right direction is +X
 	inline const vec3 DIR_RIGHT = { 1, 0,  0 };
+	//Global up direction is +Y
 	inline const vec3 DIR_UP    = { 0, 1,  0 };
-	inline const vec3 DIR_FRONT = { 0, 0, -1 }; //forward is -Z
+	//Global front direction is -Z
+	inline const vec3 DIR_FRONT = { 0, 0, -1 };
 
-	//tilt up/down (rotate around X)
+	//Tilt up/down (rotate around X)
 	inline const vec3 ROT_PITCH = { 1, 0, 0 };
-	//turn left/right (rotate around Y)
+	//Turn left/right (rotate around Y)
 	inline const vec3 ROT_YAW   = { 0, 1, 0 };
-	//bank left/right (rotate around Z)
+	//Bank left/right (rotate around Z)
 	inline const vec3 ROT_ROLL  = { 0, 0, 1 };
 
 	//============================================================================
@@ -1583,10 +1327,10 @@ namespace KalaHeaders::KalaMath
 				};
 			
 			return
-				kabs(this->w - q.w) < epsilon
-				&& kabs(this->x - q.x) < epsilon
-				&& kabs(this->y - q.y) < epsilon
-				&& kabs(this->z - q.z) < epsilon;
+				kabs(w - q.w) < epsilon
+				&& kabs(x - q.x) < epsilon
+				&& kabs(y - q.y) < epsilon
+				&& kabs(z - q.z) < epsilon;
 		}
 		constexpr bool operator!=(const quat& q) const { return !(*this == q); }
 		
@@ -1834,7 +1578,13 @@ namespace KalaHeaders::KalaMath
 	}
 	
 	//Returns range-normalized float
-	inline f32 normalize_r(f32 v) { return clamp(v, 0.0f, 1.0f); }
+	inline f32 normalize_r(f32 v) 
+	{ 
+		return 
+			isnormalized_r(v)
+			? v
+			: clamp(v, 0.0f, 1.0f);
+	}
 	//Returns range-normalized vec2
 	inline vec2 normalize_r(vec2 v) 
 	{ 
@@ -2788,43 +2538,22 @@ namespace KalaHeaders::KalaMath
 	}
 	
 	//Returns neutral vec2
-	constexpr vec2 identity_vec2()
-	{
-		return vec2(0.0f);
-	}
+	constexpr vec2 identity_vec2() { return vec2{}; }
 	//Returns true if vec2 is true identity
-	inline bool isidentity(const vec2& v)
-	{
-		return isnear(v);
-	}
+	inline bool isidentity(const vec2& v) { return isnear(v); }
 	
 	//Returns neutral vec3
-	constexpr vec3 identity_vec3()
-	{
-		return vec3(0.0f);
-	}
+	constexpr vec3 identity_vec3() { return vec3{}; }
 	//Returns true if vec3 is true identity
-	inline bool isidentity(const vec3& v)
-	{
-		return isnear(v);
-	}
+	inline bool isidentity(const vec3& v) { return isnear(v); }
 	
 	//Returns neutral vec4
-	constexpr vec4 identity_vec4()
-	{
-		return vec4(0.0f);
-	}
+	constexpr vec4 identity_vec4() { return vec4{}; }
 	//Returns true if vec4 is true identity
-	inline bool isidentity(const vec4& v)
-	{
-		return isnear(v);
-	}
+	inline bool isidentity(const vec4& v) { return isnear(v); }
 	
 	//Returns neutral quat
-	constexpr quat identity_quat()
-	{
-		return { 1.0f, 0.0f, 0.0f, 0.0f };
-	}
+	constexpr quat identity_quat() { return quat{}; }
 	//Returns true if quat is true identity
 	inline bool isidentity_q(const quat& q)
 	{
@@ -2835,14 +2564,7 @@ namespace KalaHeaders::KalaMath
 	}
 
 	//Returns neutral mat2
-	constexpr mat2 identity_mat2()
-	{
-		return
-		{
-			1.0f, 0.0f,
-			0.0f, 1.0f
-		};
-	}
+	constexpr mat2 identity_mat2() { return mat2{}; }
 	//Returns true if mat2 is true identity
 	inline bool isidentity(const mat2& m)
 	{
@@ -2854,15 +2576,7 @@ namespace KalaHeaders::KalaMath
 	}
 	
 	//Returns neutral mat3
-	constexpr mat3 identity_mat3()
-	{
-		return
-		{
-			1.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 1.0f
-		};
-	}
+	constexpr mat3 identity_mat3() { return mat3{}; }
 	//Returns true if mat3 is true identity
 	inline bool isidentity(const mat3& m)
 	{
@@ -2880,16 +2594,7 @@ namespace KalaHeaders::KalaMath
 	}
 	
 	//Returns neutral mat4
-	constexpr mat4 identity_mat4()
-	{
-		return
-		{
-			1.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 1.0f
-		};
-	}
+	constexpr mat4 identity_mat4() { return mat4{}; }
 	//Returns true if mat4 is true identity
 	inline bool isidentity(const mat4& m)
 	{
@@ -3701,1132 +3406,4 @@ namespace KalaHeaders::KalaMath
 		case SizeTarget::SIZE_COMBINED: return target.size_combined;
 		}
 	};
-	
-	//============================================================================
-	//
-	// CONVERT COLOR
-	//
-	//============================================================================
-	
-	enum class ColorConvertType : u8
-	{
-		COLOR_NONE = 0, //default, wont do any conversion
-		
-		COLOR_SRGB_TO_LINEAR = 1, //converts directly from srgb to linear
-		COLOR_LINEAR_TO_SRGB = 2, //converts directly from linear to srgb
-		
-		//srgb conversion
-		
-		COLOR_HSL_TO_HSV = 3, //converts directly from hsl to hsv
-		COLOR_HSV_TO_HSL = 4, //converts directly from hsv to hsl
-		
-		COLOR_SRGB_TO_HSV       = 5,
-		COLOR_SRGB_TO_HSL       = 6,
-		COLOR_SRGB_TO_RGB8      = 7,
-		COLOR_SRGB_TO_CMYK      = 8,
-		
-		COLOR_HSV_TO_SRGB       = 10,
-		COLOR_HSL_TO_SRGB       = 11,
-		COLOR_RGB8_TO_SRGB      = 12,
-		COLOR_CMYK_TO_SRGB      = 13,
-		
-		COLOR_SRGB_TO_PREMULTIPLIED   = 15,
-		COLOR_SRGB_FROM_PREMULTIPLIED = 16,
-		
-		//linear conversion
-		
-		COLOR_XYZ_TO_LAB = 17, //converts directly from xyz to lab
-		COLOR_LAB_TO_XYZ = 18, //converts directly from lab to xyz
-		
-		COLOR_OKLAB_TO_OKLCH = 19, //converts directly from oklab to oklch
-		COLOR_OKLCH_TO_OKLAB = 20, //converts directly from oklch to oklab
-		
-		COLOR_LINEAR_TO_XYZ   = 21,
-		COLOR_LINEAR_TO_LAB   = 22,
-		COLOR_LINEAR_TO_OKLAB = 23,
-		COLOR_LINEAR_TO_OKLCH = 24,
-		
-		COLOR_XYZ_TO_LINEAR   = 25,
-		COLOR_LAB_TO_LINEAR   = 26,
-		COLOR_OKLAB_TO_LINEAR = 27,
-		COLOR_OKLCH_TO_LINEAR = 28
-	};
-	
-	//Converts input color to returned color with chosen ColorConvertType
-	//  x = R,
-	//  y = G,
-	//  z = B,
-	//  w = A
-	inline vec4 convert_color(
-		ColorConvertType type,
-		const vec4& c)
-	{		
-		bool canNormalize = 
-			type == ColorConvertType::COLOR_SRGB_TO_LINEAR
-			|| type == ColorConvertType::COLOR_SRGB_TO_HSV
-			|| type == ColorConvertType::COLOR_SRGB_TO_HSL
-			|| type == ColorConvertType::COLOR_SRGB_TO_RGB8
-			|| type == ColorConvertType::COLOR_SRGB_TO_CMYK;
-			
-		//always range-normalize if non-linear
-		vec4 nc = canNormalize
-			? vec4(normalize_r(rgb(c)), c.w)
-			: c;
-	
-		f32 r = nc.x;
-		f32 g = nc.y;
-		f32 b = nc.z;
-		f32 a = nc.w;
-		
-		auto to_linear = [](f32 c) -> f32
-			{
-				if (c <= 0.04045f) return c / 12.92f;
-				return powf((c + 0.055f) / 1.055f, 2.4f);
-			};
-			
-		auto to_srgb = [](f32 c) -> f32
-			{
-				if (c <= 0.0031308f) return c * 12.92f;
-				return 1.055f * powf(c, 1.0f / 2.4f) - 0.055f;
-			};
-		
-		auto SRGB_TO_LINEAR = [&]() -> vec4
-			{
-				return vec4(
-					to_linear(r),
-					to_linear(g),
-					to_linear(b),
-					a);
-			};
-		auto LINEAR_TO_SRGB = [&]() -> vec4
-			{
-				return vec4(
-					to_srgb(r),
-					to_srgb(g),
-					to_srgb(b),
-					a);
-			};
-			
-		auto HSL_TO_HSV = [&]() -> vec4
-			{
-				f32 H = r;
-				f32 S = g;
-				f32 L = b;
-				
-				//convert HSL to HSV
-				
-				f32 V = L + S * min(L, 1.0f - L);
-				
-				//saturation
-				
-				f32 S_v{};
-				if (V > epsilon) S_v = (2.0f * (1.0f - L / V));
-				
-				return vec4(H, S_v, V, a);
-			};
-		auto HSV_TO_HSL = [&]() -> vec4
-			{
-				f32 H = r;
-				f32 S = g;
-				f32 V = b;
-				
-				//lightness
-				
-				f32 L = V * (1.0f - S * 0.5f);
-				
-				//saturation
-				
-				f32 S_l{};
-				if (L > epsilon
-					&& L < 1.0f - epsilon)
-				{
-					S_l = (V - L) / min(L, 1.0f - L);	
-				}
-				
-				return vec4(H, S_l, L, a);
-			};
-	
-		auto SRGB_TO_HSV = [&]() -> vec4
-			{
-				f32 maxc = max(r, max(g, b));
-				f32 minc = min(r, min(g, b));
-				f32 delta = maxc - minc;
-				
-				f32 h{};
-				f32 s{};
-				f32 v = maxc;
-				
-				if (delta > epsilon)
-				{
-					//saturation
-					
-					if (maxc > 0.0f) s = delta / maxc;
-					
-					//hue
-					
-					if (isnear(maxc, r)) h = (g - b) / delta;
-					else if (isnear(maxc, g)) h = 2.0f + (b - r) / delta;
-					else h = 4.0f + (r - g) / delta;
-					
-					h /= 6.0f;
-					if (h < 0.0f) h += 1.0f;
-				}
-				
-				return vec4(h, s, v, a);
-			};
-		auto SRGB_TO_HSL = [&]() -> vec4
-			{
-				f32 maxc = max(r, max(g, b));
-				f32 minc = min(r, min(g, b));
-				f32 delta = maxc - minc;
-				
-				f32 h{};
-				f32 s{};
-				f32 l = 0.5f * (maxc + minc);
-				
-				if (delta <= epsilon) return vec4(0, 0, l, a);
-				else
-				{
-					//saturation
-					
-					if (l < 0.5f) s = delta / (maxc + minc);
-					else s = delta / (2.0f - maxc - minc);
-					
-					//hue
-					
-					if (isnear(maxc, r)) h = (g - b) / delta;
-					else if (isnear(maxc, g)) h = 2.0f + (b - r) / delta;
-					else h = 4.0f + (r - g) / delta;
-					
-					h /= 6.0f;
-					if (h < 0.0f) h += 1.0f;
-				}
-				
-				return vec4(h, s, l, a);
-			};
-		auto SRGB_TO_RGB8 = [&]() -> vec4
-			{
-				auto to_rgb8 = [](f32 c) -> f32
-					{
-						return clamp(c * 255.0f, 0.0f, 255.0f);
-					};
-					
-				return vec4(
-					to_rgb8(r),
-					to_rgb8(g),
-					to_rgb8(b),
-					to_rgb8(a));
-			};
-		auto SRGB_TO_CMYK = [&]() -> vec4
-			{
-				f32 k = 1.0f - max(r, max(g, b));
-				
-				//pure black shortcut
-				if (k >= 1.0f - epsilon) return vec4(vec3(0.0f), 1.0f);
-				
-				f32 c = (1.0f - r - k) / (1.0f - k);
-				f32 m = (1.0f - g - k) / (1.0f - k);
-				f32 y = (1.0f - b - k) / (1.0f - k);
-				
-				//r = C, g = M, b = Y, a = K
-				return vec4(c, m, y, k);
-			};
-			
-		auto HSV_TO_SRGB = [&]() -> vec4
-			{
-				f32 h = r;
-				f32 s = g;
-				f32 v = b;
-				
-				if (s <= epsilon) return vec4(v, v, v, a);
-				
-				h = fmodf(h, 1.0f) * 6.0f;
-				f32 i = floorf(h);
-				f32 f = h - i;
-				
-				f32 p = v * (1.0f - s);
-				f32 q = v * (1.0f - s * f);
-				f32 t = v * (1.0f - s * (1.0f - f));
-				
-				f32 R{};
-				f32 G{};
-				f32 B{};
-				
-				switch (scast<int>(i))
-				{
-					default:
-					case 0: R = v; G = t; B = p; break;
-					case 1: R = q; G = v; B = p; break;
-					case 2: R = p; G = v; B = t; break;
-					case 3: R = p; G = q; B = v; break;
-					case 4: R = t; G = p; B = v; break;
-					case 5: R = v; G = p; B = q; break;
-				}
-				
-				return vec4(R, G, B, a);
-			};
-		auto HSL_TO_SRGB = [&]() -> vec4
-			{
-				f32 h = r;
-				f32 s = g;
-				f32 l = b;
-				
-				f32 R{};
-				f32 G{};
-				f32 B{};
-				
-				if (s <= epsilon) R = G = B = l;
-				else
-				{
-					auto hue_to_srgb = [](f32 p, f32 q, f32 t) -> f32
-						{
-							if (t < 0.0f) t += 1.0f;
-							if (t > 1.0f) t -= 1.0f;
-							
-							if (t < 1.0f / 6.0f) return p + (q - p) * 6.0f * t;
-							if (t < 1.0f / 2.0f) return q;
-							if (t < 2.0f / 3.0f) return p + (q - p) * (2.0f / 3.0f - t) * 6.0f;
-							
-							return p;
-						};
-						
-					f32 q = (l < 0.5f)
-						? (l * (1.0f + s))
-						: (l + s - l * s);
-						
-					f32 p = 2.0f * l - q;
-					
-					R = hue_to_srgb(p, q, h + 1.0f / 3.0f);
-					G = hue_to_srgb(p, q, h);
-					B = hue_to_srgb(p, q, h - 1.0f / 3.0f);
-				}
-				
-				return vec4(R, G, B, a);
-			};
-		auto RGB8_TO_SRGB = [&]() -> vec4 
-		{ 
-			return vec4(
-				r / 255.0f, 
-				g / 255.0f, 
-				b / 255.0f, 
-				a); 
-		};
-		auto CMYK_TO_SRGB = [&]() -> vec4
-			{
-				f32 C = r;
-				f32 M = g;
-				f32 Y = b;
-				f32 K = a;
-				
-				if (K >= 1.0f - epsilon) return vec4(vec3(0.0f), 1.0f);
-				
-				f32 R = (1.0f - C) * (1.0f - K);
-				f32 G = (1.0f - M) * (1.0f - K);
-				f32 B = (1.0f - Y) * (1.0f - K);
-				
-				//alpha as 1.0f because CMYK has no alpha channel
-				return vec4(R, G, B, 1.0f);
-			};
-			
-		auto SRGB_TO_PREMULTIPLIED = [&]() -> vec4
-			{
-				return vec4(r * a, g * a, b * a, a);
-			};
-		auto SRGB_FROM_PREMULTIPLIED = [&]() -> vec4
-			{
-				//completely transparent, no color information
-				if (a <= epsilon) return vec4(0.0f);
-				
-				return vec4(r / a, g / a, b / a, a);
-			};
-			
-		//linear conversion
-			
-		auto XYZ_TO_LAB = [&](
-			const vec4& inColor = vec4(),
-			bool useOriginal = true) -> vec4
-			{
-				//reference white (D65)
-				
-				constexpr f32 Xn = 0.95047f;
-				constexpr f32 Yn = 1.00000f;
-				constexpr f32 Zn = 1.08883f;
-				
-				auto f = [](f32 t) -> f32
-					{
-						constexpr f32 eps = 0.008856f;
-						constexpr f32 k = 7.787f;    //116 / (3 * eps^(2/3))
-						constexpr f32 c = 0.137931f; //16.0 / 116.0
-						
-						return (t > eps)
-							? cbrtf(t)
-							: (k * t) + c;
-					};
-					
-				f32 X = r;
-				f32 Y = g;
-				f32 Z = b;
-				f32 W = a;
-				
-				if (!useOriginal)
-				{
-					X = inColor.x;
-					Y = inColor.y;
-					Z = inColor.z;
-					W = inColor.w;
-				}
-					
-				f32 xr = X / Xn;
-				f32 yr = Y / Yn;
-				f32 zr = Z / Zn;
-				
-				f32 fx = f(xr);
-				f32 fy = f(yr);
-				f32 fz = f(zr);
-				
-				f32 L = (116.0f * fy) - 16.0f;
-				f32 A = 500.0f * (fx - fy);
-				f32 B = 200.0f * (fy - fz);
-				
-				return vec4(L, A, B, W);
-			};
-		auto LAB_TO_XYZ = [&]() -> vec4
-			{
-				//reference white (D65)
-				
-				constexpr f32 Xn = 0.95047f;
-				constexpr f32 Yn = 1.00000f;
-				constexpr f32 Zn = 1.08883f;
-				
-				f32 L = r;
-				f32 A = g;
-				f32 B = b;
-				
-				auto finv = [](f32 t) -> f32
-					{
-						constexpr f32 eps = 0.008856f;
-						constexpr f32 k = 7.787f;    //116 / (3 * eps^(2/3))
-						constexpr f32 c = 0.137931f; //16.0 / 116.0
-						
-						f32 t3 = t * t * t;
-						return (t3 > eps)
-							? t3
-							: (t - c) / k;
-					};
-					
-				f32 fy = (L + 16.0f) / 116.0f;
-				f32 fx = fy + (A / 500.0f);
-				f32 fz = fy - (B / 200.0f);
-				
-				f32 xr = finv(fx);
-				f32 yr = finv(fy);
-				f32 zr = finv(fz);
-				
-				return vec4(
-					xr * Xn,
-					yr * Yn,
-					zr * Zn,
-					a);
-			};
-			
-		auto OKLAB_TO_OKLCH = [&]() -> vec4
-			{
-				f32 L = r;
-				f32 A = g;
-				f32 Bc = b;
-				
-				//chroma
-				
-				f32 C = sqrtf(A * A + Bc * Bc);
-				
-				//hue angle in radians
-				
-				f32 h = atan2f(Bc, A);
-				
-				//normalize hue to 0-1
-				
-				f32 h_norm = h / (2.0f * PI);
-				if (h_norm < 0.0f) h_norm += 1.0f;
-				
-				return vec4(L, C, h_norm, a);
-			};
-		auto OKLCH_TO_OKLAB = [&]() -> vec4
-			{
-				f32 L = r;
-				f32 C = g;
-				f32 h = b; //normalized 0-1 hue
-				
-				//convert hue back to radians
-				
-				f32 angle = h * (2.0f * PI);
-				
-				//convert polar to cartesian
-				
-				f32 A = C * cosf(angle);
-				f32 Bc = C * sinf(angle);
-				
-				return vec4(L, A, Bc, a);
-			};
-			
-		auto LINEAR_TO_XYZ = [&]() -> vec4 
-		{
-			constexpr mat3 M(
-				0.4124564f, 0.3575761f, 0.1804375f,
-				0.2126729f, 0.7151522f, 0.0721750f,
-				0.0193339f, 0.1191920f, 0.9503041f);
-				
-			vec3 xyz = M * vec3(r, g, b);
-			return vec4(xyz, a);
-		};
-		auto LINEAR_TO_LAB = [&]() -> vec4
-			{
-				return XYZ_TO_LAB(LINEAR_TO_XYZ(), false);
-			};
-		auto LINEAR_TO_OKLAB = [&](
-			const vec4& inColor = vec4(),
-			bool useOriginal = true) -> vec4
-			{
-				f32 R = useOriginal ? r : inColor.x;
-				f32 G = useOriginal ? g : inColor.y;
-				f32 B = useOriginal ? b : inColor.z;
-				f32 A_ = useOriginal ? a : inColor.w;
-				
-				//convert linear to LMS
-				
-				f32 l = 0.4122214708f * R + 0.5363325363f * G + 0.0514459929f * B;
-				f32 m = 0.2119034982f * R + 0.6806995451f * G + 0.1073969566f * B;
-				f32 s = 0.0883024619f * R + 0.2817188376f * G + 0.6299787005f * B;
-				
-				//non-linear transform
-				
-				f32 l_ = cbrtf(l);
-				f32 m_ = cbrtf(m);
-				f32 s_ = cbrtf(s);
-				
-				//convert LMS to oklab
-				
-				f32 L = 0.2104542553f * l_ + 0.7936177850f * m_ - 0.0040720468f * s_;
-				f32 A = 1.9779984951f * l_ - 2.4285922050f * m_ + 0.4505937099f * s_;
-				f32 Bc = 0.0259040371f * l_ + 0.7827717662f * m_ - 0.8086757660f * s_;
-				
-				return vec4(L, A, Bc, A_);
-			};
-		auto LINEAR_TO_OKLCH = [&]() -> vec4
-			{
-				vec4 oklab = LINEAR_TO_OKLAB(vec4(r, g, b, a), false);
-				
-				f32 L = oklab.x;
-				f32 A = oklab.y;
-				f32 Bc = oklab.z;
-				f32 A_ = oklab.w;
-				
-				float C = sqrtf(A * A + Bc * Bc);
-				float h = atan2f(Bc, A) / (2.0f * PI);
-				if (h < 0.0f) h += 1.0f;
-				
-				return vec4(L, C, h, A_);
-			};
-			
-		auto XYZ_TO_LINEAR = [&](
-			const vec4& inColor = vec4(),
-			bool useOriginal = true) -> vec4 
-		{ 
-			constexpr mat3 M(
-				 3.2404542f, -1.5371385f, -0.4985314f,
-				-0.9692660f,  1.8760108f,  0.0415560f,
-				 0.0556434f, -0.2040259f,  1.0572252f);
-				
-			f32 X = useOriginal ? r : inColor.x;
-			f32 Y = useOriginal ? g : inColor.y;
-			f32 Z = useOriginal ? b : inColor.z;
-			f32 W = useOriginal ? a : inColor.w;
-			
-			vec3 rgb_linear = M * vec3(X, Y, Z);
-			
-			return vec4(
-				rgb_linear.x,
-				rgb_linear.y,
-				rgb_linear.z,
-				W);
-		};
-		auto LAB_TO_LINEAR = [&]() -> vec4
-			{
-				return XYZ_TO_LINEAR(LAB_TO_XYZ(), false);
-			};
-		auto OKLAB_TO_LINEAR = [&](
-			const vec4& inColor = vec4(),
-			bool useOriginal = true) -> vec4
-			{
-				f32 L  = useOriginal ? r : inColor.x;
-				f32 A  = useOriginal ? g : inColor.y;
-				f32 Bc = useOriginal ? b : inColor.z;
-				f32 A_ = useOriginal ? a : inColor.w;
-				
-				//convert oklab to LMS
-				
-				f32 l_ = L + 0.3963377774f * A + 0.2158037573f * Bc;
-				f32 m_ = L - 0.1055613458f * A - 0.0638541728f * Bc;
-				f32 s_ = L - 0.0894841775f * A - 1.2914855480f * Bc;
-				
-				//reverse non-linear
-				
-				f32 l = l_ * l_ * l_;
-				f32 m = m_ * m_ * m_;
-				f32 s = s_ * s_ * s_;
-				
-				//convert LMS to linear rgb
-				
-				f32 R_lin =  4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s;
-				f32 G_lin = -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s;
-				f32 B_lin = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s;
-				
-				return vec4(
-					R_lin,
-					G_lin,
-					B_lin,
-					A_);
-			};
-		auto OKLCH_TO_LINEAR = [&]() -> vec4
-			{
-				f32 L = r;
-				f32 C = g;
-				f32 h = b;
-				f32 A_ = a;
-				
-				//convert hue to radians
-				
-				f32 angle = h * (2.0f * PI);
-				
-				//convert polar to cartesian
-				
-				f32 A = C * cosf(angle);
-				f32 Bc = C * sinf(angle);
-				
-				return OKLAB_TO_LINEAR(vec4(L, A, Bc, A_), false);
-			};
-			
-		switch (type)
-		{
-		default:
-		case ColorConvertType::COLOR_NONE: return c;
-			
-		case ColorConvertType::COLOR_SRGB_TO_LINEAR: return SRGB_TO_LINEAR();
-		case ColorConvertType::COLOR_LINEAR_TO_SRGB: return LINEAR_TO_SRGB();
-		
-		//srgb conversion
-		
-		case ColorConvertType::COLOR_HSL_TO_HSV: return HSL_TO_HSV();
-		case ColorConvertType::COLOR_HSV_TO_HSL: return HSV_TO_HSL();
-		
-		case ColorConvertType::COLOR_SRGB_TO_HSV:  return SRGB_TO_HSV();
-		case ColorConvertType::COLOR_SRGB_TO_HSL:  return SRGB_TO_HSL();
-		case ColorConvertType::COLOR_SRGB_TO_RGB8: return SRGB_TO_RGB8();
-		case ColorConvertType::COLOR_SRGB_TO_CMYK: return SRGB_TO_CMYK();
-		
-		case ColorConvertType::COLOR_HSV_TO_SRGB:  return HSV_TO_SRGB();
-		case ColorConvertType::COLOR_HSL_TO_SRGB:  return HSL_TO_SRGB();
-		case ColorConvertType::COLOR_RGB8_TO_SRGB: return RGB8_TO_SRGB();
-		case ColorConvertType::COLOR_CMYK_TO_SRGB: return CMYK_TO_SRGB();
-		
-		case ColorConvertType::COLOR_SRGB_TO_PREMULTIPLIED:   return SRGB_TO_PREMULTIPLIED();
-		case ColorConvertType::COLOR_SRGB_FROM_PREMULTIPLIED: return SRGB_FROM_PREMULTIPLIED();
-		
-		//linear conversion
-		
-		case ColorConvertType::COLOR_XYZ_TO_LAB: return XYZ_TO_LAB();
-		case ColorConvertType::COLOR_LAB_TO_XYZ: return LAB_TO_XYZ();
-		
-		case ColorConvertType::COLOR_OKLAB_TO_OKLCH: return OKLAB_TO_OKLCH();
-		case ColorConvertType::COLOR_OKLCH_TO_OKLAB: return OKLCH_TO_OKLAB();
-		
-		case ColorConvertType::COLOR_XYZ_TO_LINEAR:   return XYZ_TO_LINEAR();
-		case ColorConvertType::COLOR_LAB_TO_LINEAR:   return LAB_TO_LINEAR();
-		case ColorConvertType::COLOR_OKLAB_TO_LINEAR: return OKLAB_TO_LINEAR();
-		case ColorConvertType::COLOR_OKLCH_TO_LINEAR: return OKLCH_TO_LINEAR();
-		
-		case ColorConvertType::COLOR_LINEAR_TO_XYZ:   return LINEAR_TO_XYZ();
-		case ColorConvertType::COLOR_LINEAR_TO_LAB:   return LINEAR_TO_LAB();
-		case ColorConvertType::COLOR_LINEAR_TO_OKLAB: return LINEAR_TO_OKLAB();
-		case ColorConvertType::COLOR_LINEAR_TO_OKLCH: return LINEAR_TO_OKLCH();
-		}
-	}
-	
-	//============================================================================
-	//
-	// COLOR OPERATORS
-	//
-	//============================================================================
-	
-	enum class ColorEncodeType : u8
-	{
-		//Nonlinear, gamma-encoded sRGB transfer function.
-		//Values must be range-normalized before use.
-		COLORENCODE_SRGB = 0,
-		
-		//Linear-light RGB (no gamma curve).
-		//Scene-referred or linear SDR.
-		//Values must not be range-normalized or gamma-decoded.
-		COLORENCODE_LINEAR = 1
-	};
-	
-	//Change the exposure of the input color with the HDR exposure adjustment,
-	//clamped internally from -10 to 10.
-	inline vec3 exposure(
-		const vec3& c,
-		f32 ev)
-	{
-		f32 clamped = clamp(ev, -10.0f, 10.0f);
-		
-		f32 scale = powf(2.0f, clamped);
-		return c * scale;
-	}
-	
-	//Brightens shadows and compresses highlights.
-	//Clamped internally from 0.01 to 10.
-	inline vec3 gamma(
-		const vec3& c,
-		f32 gammaValue)
-	{
-		//always range-normalize up front
-		vec3 nc = normalize_r(c);
-		
-		f32 clamped = clamp(gammaValue, 0.01f, 10.0f);
-		
-		f32 inv = 1.0f / clamped;
-		return vec3(
-			powf(nc.x, inv),
-			powf(nc.y, inv),
-			powf(nc.z, inv));
-	}
-	//Darkens shadows and expands highlights.
-	//Clamped internally from 0.01 to 10.
-	inline vec3 degamma(
-		const vec3& c,
-		f32 gammaValue)
-	{
-		//always range-normalize up front
-		vec3 nc = normalize_r(c);
-		
-		f32 clamped = clamp(gammaValue, 0.01f, 10.0f);
-		
-		return vec3(
-			powf(nc.x, clamped),
-			powf(nc.y, clamped),
-			powf(nc.z, clamped));
-	}
-	
-	//Adds or removes light uniformly across all channels.
-	//  amount = 0 - unchanged
-	//  amount < 0 - darker
-	//  amount > 0 - brighter
-	inline vec3 brightness(
-		const vec3& c,
-		f32 amount)
-	{
-		return c + vec3(amount);
-	}
-	
-	//Inverts input color.
-	inline vec3 invert(
-		ColorEncodeType type,
-		const vec3& c)
-	{
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			vec3 nc = normalize_r(c);
-			
-			return vec3(1.0f) - nc;
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			return vec3(1.0f) - c;
-		}
-		}
-	}
-	
-	//Makes the colors of a color channel blocky by forcing them into big chunky steps.
-	//Levels are clamped internally from 1.0 to 256.
-	inline f32 posterize(
-		ColorEncodeType type,
-		f32 colorChannel,
-		f32 levels)
-	{
-		f32 clamped = clamp(levels, 1.0f, 256.0f);
-		
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			f32 nc = normalize_r(colorChannel);
-			
-			return floorf(nc * clamped) / clamped;
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			return floorf(colorChannel * clamped) / clamped;
-		}
-		}
-	}
-	
-	//Adjusts shadows, midtones and highlights independently.
-	//All three values are clamped internally from 0.0 to 1.0.
-	//	- shadows affect dark areas,
-	//	- midtones affect mid-range luminance,
-	//  - highlights affect bright areas
-	inline vec3 shadows_midtones_highlights(
-		ColorEncodeType type,
-		const vec3& c,
-		f32 shadows,
-		f32 midtones,
-		f32 highlights)
-	{
-		f32 s = clamp(shadows,    -1.0f, 1.0f);
-		f32 m = clamp(midtones,   -1.0f, 1.0f);
-		f32 h = clamp(highlights, -1.0f, 1.0f);
-		
-		vec3 col{};
-		f32 L{};
-		
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			vec3 nc = normalize_r(c);
-			
-			L = dot(nc, vec3(0.2126f, 0.7152f, 0.0722f));
-			col = nc;
-			
-			break;
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			L = dot(c, vec3(0.2126f, 0.7152f, 0.0722f));
-			col = c;
-			
-			break;
-		}
-		}
-		
-		//weight curves (smoothstep transitions)
-		
-		f32 wShadow =    1.0f - smoothstep(0.25f, 0.5f, L);
-		f32 wHighlight =        smoothstep(0.5f, 0.75f, L);
-		f32 wMid =       1.0f - wShadow - wHighlight;
-		
-		return vec3(
-			col
-			+ vec3(s) * wShadow
-			+ vec3(m) * wMid
-			+ vec3(h) * wHighlight);
-	}
-	
-	//Controls how colorful something looks. Uses OKLCH for linear.
-	//Clamped internally from 0.0 to 10.
-	//  amount = 0 - grayscale,
-	//  amount = 1 - unchanged,
-	//  amount > 1 - oversaturated
-	inline vec3 saturation(
-		ColorEncodeType type,
-		const vec3& c,
-		f32 amount)
-	{
-		f32 clamped = clamp(amount, 0.0f, 10.0f);
-		
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			vec3 nc = normalize_r(c);
-			
-			constexpr f32 wr = 0.2126f;
-			constexpr f32 wg = 0.7152f;
-			constexpr f32 wb = 0.0722f;
-			
-			f32 grey = nc.x * wr + nc.y * wg + nc.z * wb;
-			
-			return vec3(
-				grey + (nc.x - grey) * clamped,
-				grey + (nc.y - grey) * clamped,
-				grey + (nc.z - grey) * clamped);
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			vec4 oklch = convert_color(ColorConvertType::COLOR_LINEAR_TO_OKLCH, vec4(c, 1.0f));
-			
-			oklch.y *= clamped; //chroma
-			
-			return vec3(convert_color(
-				ColorConvertType::COLOR_OKLCH_TO_LINEAR, oklch));
-		}
-		}
-	}
-	
-	//Controls how far colors are pushed away from mid-grey. Uses OKLCH for linear.
-	//Clamped internally from 0.0 to 10.
-	//  amount = 0 - grayscale
-	//  amount = 1 - unchanged
-	//  amount > 1 - higher contrast
-	inline vec3 contrast(
-		ColorEncodeType type,
-		const vec3& c,
-		f32 amount)
-	{
-		f32 clamped = clamp(amount, 0.0f, 10.0f);
-		
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			vec3 nc = normalize_r(c);
-			
-			return (nc - vec3(0.5f)) * clamped + vec3(0.5f);
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			vec4 oklch = convert_color(ColorConvertType::COLOR_LINEAR_TO_OKLCH, vec4(c, 1.0f));
-			
-			f32 L = oklch.x;
-			L = 0.5f + (L - 0.5f) * clamped;
-			oklch.x = clamp(L, 0.0f, 1.0f);
-			
-			return vec3(convert_color(
-				ColorConvertType::COLOR_OKLCH_TO_LINEAR, oklch));
-		}
-		}
-	}
-	
-	//Rotates hue in normalized units. Uses OKLCH for linear.
-	//Display-referred: needs to be range-normalized.
-	//  shift = 0-1, where 1 wraps back to 0
-	inline vec3 hue_shift(
-		ColorEncodeType type,
-		const vec3& c,
-		f32 shift)
-	{
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			vec3 nc = normalize_r(c);
-			
-			f32 h = shift - floorf(shift);
-			
-			//convert to hsv
-			
-			vec4 hsv = convert_color(ColorConvertType::COLOR_SRGB_TO_HSV, vec4(nc, 1.0f));
-			
-			hsv.x = hsv.x + h;
-			if (hsv.x >= 1.0f) hsv.x -= 1.0f;
-			
-			//back to rgb
-			
-			return convert_color(ColorConvertType::COLOR_HSV_TO_SRGB, hsv);
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			vec4 oklch = convert_color(ColorConvertType::COLOR_LINEAR_TO_OKLCH, vec4(c, 1.0f));
-			
-			float h = oklch.z + shift;
-			if (h >= 1.0f) h -= 1.0f;
-			if (h < 0.0f) h += 1.0f;
-			
-			oklch.z = h;
-			
-			return vec3(convert_color(
-				ColorConvertType::COLOR_OKLCH_TO_LINEAR, oklch));
-		}
-		}
-	}
-	
-	//Rotates hue in degrees instead of normalized units. Uses OKLCH for linear.
-	//  degrees wraps automatically, 0-360 is one full rotation
-	inline vec3 hue_rotate(
-		ColorEncodeType type,
-		const vec3& c,
-		f32 degrees)
-	{
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			f32 shift = degrees / 360.0f;
-			return hue_shift(
-				ColorEncodeType::COLORENCODE_SRGB,
-				c,
-				shift);
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			f32 shift = degrees / 360.0f;
-			return hue_shift(
-				ColorEncodeType::COLORENCODE_LINEAR,
-				c,
-				shift);
-		}
-		}
-	}
-	
-	//Increases saturation while protecting already-saturated colors. Uses OKLCH for linear.
-	//Clamped internally from 0 to 10.
-	//  amount = 0 - unchanged
-	//  amount > 0 - more vibrant
-	inline vec3 vibrance(
-		ColorEncodeType type,
-		const vec3& c,
-		f32 amount)
-	{
-		f32 a = clamp(amount, 0.0f, 10.0f);
-		
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			vec3 nc = normalize_r(c);
-			
-			//convert to hsv
-			
-			vec4 hsv = convert_color(ColorConvertType::COLOR_SRGB_TO_HSV, vec4(nc, 1.0f));
-			
-			//vibrance protects already-saturated colors:
-			//higher effect for lower-saturation pixels
-			
-			f32 vibranceFactor = a * (1.0f - hsv.y);
-			
-			hsv.y = clamp(hsv.y + vibranceFactor, 0.0f, 1.0f);
-			
-			//back to rgb
-			
-			return convert_color(ColorConvertType::COLOR_HSV_TO_SRGB, hsv);
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			vec4 oklch = convert_color(ColorConvertType::COLOR_LINEAR_TO_OKLCH, vec4(c, 1.0f));
-			
-			f32 C = oklch.y;
-			
-			//low-chroma pixels get more boost
-			f32 factor = a * (1.0f - clamp(C, 0.0f, 1.0f));
-			
-			oklch.y = clamp(C + factor, 0.0f, 1.0f);
-			
-			return vec3(convert_color(
-				ColorConvertType::COLOR_OKLCH_TO_LINEAR, oklch));
-		}
-		}
-	}
-	
-	//Multiplies the color by a tint color, preserving brightness. Uses XYZ for linear.
-	//  tintColor = vec3(r, g, b) where 1 = no change
-	inline vec3 tint(
-		ColorEncodeType type,
-		const vec3& c,
-		const vec3& tintColor)
-	{
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			vec3 nc = normalize_r(c);
-			
-			return nc * tintColor;
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			vec4 xyz = convert_color(ColorConvertType::COLOR_LINEAR_TO_XYZ, vec4(c, 1.0f));
-			
-			xyz.x *= tintColor.x;
-			xyz.y *= tintColor.y;
-			xyz.z *= tintColor.z;
-			
-			return vec3(convert_color(
-				ColorConvertType::COLOR_XYZ_TO_LINEAR, xyz));
-		}
-		}
-	}
-	
-	//Applies a warm/cool color temperature bias. Uses XYZ for linear.
-	//Clamped internally from -1 to 1.
-	//  amount = -1 - cool
-	//  amount = +1 - warm
-	inline vec3 temperature(
-		ColorEncodeType type,
-		const vec3& c,
-		f32 amount)
-	{
-		f32 t = clamp(amount, -1.0f, 1.0f);
-		
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			vec3 nc = normalize_r(c);
-			
-			vec3 cool = vec3(0.8f, 0.9f, 1.0f);
-			vec3 warm = vec3(1.0f, 0.9f, 0.8f);
-			
-			vec3 tintColor = (t >= 0.0f)
-				? lerp(vec3(1.0f), warm,  t)
-				: lerp(vec3(1.0f), cool, -t);
-				
-			return nc * tintColor;
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			vec4 xyz = convert_color(ColorConvertType::COLOR_LINEAR_TO_XYZ, vec4(c, 1.0f));
-			
-			//amount t = [-1, 1]
-			f32 cool = -t;
-			f32 warm =  t;
-			
-			//warm shifts X upward (toward red),
-			//cool shifts Z upward (toward blue)
-			xyz.x *= (1.0f + warm * 0.1f);
-			xyz.z *= (1.0f + cool * 0.1f);
-			
-			return vec3(convert_color(
-				ColorConvertType::COLOR_XYZ_TO_LINEAR, xyz));
-		}
-		}
-	}
-	
-	//Shifts the color toward a target white point. Uses XYZ for linear.
-	//  whitePoint - vec3 defining desired neutral color (1 = no shift)
-	inline vec3 white_balance(
-		ColorEncodeType type,
-		const vec3& c,
-		const vec3& whitePoint)
-	{
-		switch (type)
-		{
-		case ColorEncodeType::COLORENCODE_SRGB:
-		{
-			//always range-normalize up front
-			vec3 nc = normalize_r(c);
-			
-			return nc * whitePoint;
-		}
-		case ColorEncodeType::COLORENCODE_LINEAR:
-		{
-			vec4 xyz = convert_color(ColorConvertType::COLOR_LINEAR_TO_XYZ, vec4(c, 1.0f));
-			
-			xyz.x *= whitePoint.x;
-			xyz.y *= whitePoint.y;
-			xyz.z *= whitePoint.z;
-			
-			return vec3(convert_color(
-				ColorConvertType::COLOR_XYZ_TO_LINEAR, xyz));
-		}
-		}
-	}
 }
