@@ -4,8 +4,12 @@ build/
 .vs/
 
 # Release and Debug in project folders
+/Game-test/release/
+/Game-test/debug/
 /KalaLua/release/
 /KalaLua/debug/
+/UI-test/release/
+/UI-test/debug/
 
 # Large files
 *.pdb
