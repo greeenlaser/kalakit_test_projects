@@ -467,60 +467,80 @@ void AssignUIFunctions()
 	static GL_UI uiFunc{};
 	const GL_Core* coreFunc = OpenGL_Functions_Core::GetGLCore();
 
-	uiFunc.glEnable             = coreFunc->glEnable;
-	uiFunc.glDisable            = coreFunc->glDisable;
-	uiFunc.glBlendFunc          = coreFunc->glBlendFunc;
-	uiFunc.glDepthMask          = coreFunc->glDepthMask;
-	uiFunc.glBufferData         = coreFunc->glBufferData;
-	uiFunc.glDrawElements       = coreFunc->glDrawElements;
-	uiFunc.glGenVertexArrays    = coreFunc->glGenVertexArrays;
-	uiFunc.glGenBuffers         = coreFunc->glGenBuffers;
-	uiFunc.glBindBuffer         = coreFunc->glBindBuffer;
+	//state
+
+	uiFunc.glEnable = coreFunc->glEnable;
+	uiFunc.glDisable = coreFunc->glDisable;
+	uiFunc.glBlendFunc = coreFunc->glBlendFunc;
+	uiFunc.glDepthMask = coreFunc->glDepthMask;
+	uiFunc.glGetError = coreFunc->glGetError;
+	uiFunc.glGetIntegerv = coreFunc->glGetIntegerv;
+
+	//buffers / VAOs
+
+	uiFunc.glGenBuffers = coreFunc->glGenBuffers;
+	uiFunc.glDeleteBuffers = coreFunc->glDeleteBuffers;
+	uiFunc.glBindBuffer = coreFunc->glBindBuffer;
+	uiFunc.glBufferData = coreFunc->glBufferData;
+
+	uiFunc.glGenVertexArrays = coreFunc->glGenVertexArrays;
 	uiFunc.glDeleteVertexArrays = coreFunc->glDeleteVertexArrays;
-	uiFunc.glDeleteBuffers      = coreFunc->glDeleteBuffers;
-	uiFunc.glGetError           = coreFunc->glGetError;
+	uiFunc.glBindVertexArray = coreFunc->glBindVertexArray;
 
-	uiFunc.glCreateShader       = coreFunc->glCreateShader;
-	uiFunc.glCreateProgram      = coreFunc->glCreateProgram;
-	uiFunc.glValidateProgram    = coreFunc->glValidateProgram;
-	uiFunc.glAttachShader       = coreFunc->glAttachShader;
-	uiFunc.glLinkProgram        = coreFunc->glLinkProgram;
-	uiFunc.glGetProgramiv       = coreFunc->glGetProgramiv;
-	uiFunc.glGetProgramInfoLog  = coreFunc->glGetProgramInfoLog;
-	uiFunc.glGetShaderInfoLog   = coreFunc->glGetShaderInfoLog;
-	uiFunc.glIsProgram          = coreFunc->glIsProgram;
-	uiFunc.glUseProgram         = coreFunc->glUseProgram;
-	uiFunc.glShaderSource       = coreFunc->glShaderSource;
-	uiFunc.glCompileShader      = coreFunc->glCompileShader;
-	uiFunc.glGetUniformLocation = coreFunc->glGetUniformLocation;
-	uiFunc.glGetIntegerv        = coreFunc->glGetIntegerv;
-	uiFunc.glGetShaderiv        = coreFunc->glGetShaderiv;
-	uiFunc.glUniform1i          = coreFunc->glUniform1i;
-	uiFunc.glUniform1f          = coreFunc->glUniform1f;
-	uiFunc.glUniform1fv         = coreFunc->glUniform1fv;
-	uiFunc.glUniform2fv         = coreFunc->glUniform2fv;
-	uiFunc.glUniform3fv         = coreFunc->glUniform3fv;
-	uiFunc.glUniform4fv         = coreFunc->glUniform4fv;
-	uiFunc.glUniformMatrix2fv   = coreFunc->glUniformMatrix2fv;
-	uiFunc.glUniformMatrix3fv   = coreFunc->glUniformMatrix3fv;
-	uiFunc.glUniformMatrix4fv   = coreFunc->glUniformMatrix4fv;
-	uiFunc.glDetachShader       = coreFunc->glDetachShader;
-	uiFunc.glDeleteShader       = coreFunc->glDeleteShader;
-	uiFunc.glDeleteProgram      = coreFunc->glDeleteProgram;
-
-	uiFunc.glActiveTexture           = coreFunc->glActiveTexture;
 	uiFunc.glEnableVertexAttribArray = coreFunc->glEnableVertexAttribArray;
-	uiFunc.glVertexAttribPointer     = coreFunc->glVertexAttribPointer;
-	uiFunc.glBindTexture             = coreFunc->glBindTexture;
-	uiFunc.glBindVertexArray         = coreFunc->glBindVertexArray;
-	uiFunc.glGenTextures             = coreFunc->glGenTextures;
-	uiFunc.glTexParameteri           = coreFunc->glTexParameteri;
-	uiFunc.glPixelStorei             = coreFunc->glPixelStorei;
-	uiFunc.glTexImage2D              = coreFunc->glTexImage2D;
-	uiFunc.glTexSubImage2D           = coreFunc->glTexSubImage2D;
-	uiFunc.glTexStorage2D            = coreFunc->glTexStorage2D;
-	uiFunc.glGenerateMipmap          = coreFunc->glGenerateMipmap;
-	uiFunc.glDeleteTextures          = coreFunc->glDeleteTextures;
+	uiFunc.glVertexAttribPointer = coreFunc->glVertexAttribPointer;
+	uiFunc.glDisableVertexAttribArray = coreFunc->glDisableVertexAttribArray;
+
+	//drawing
+
+	uiFunc.glDrawElements = coreFunc->glDrawElements;
+
+	//shaders / programs
+
+	uiFunc.glCreateShader = coreFunc->glCreateShader;
+	uiFunc.glShaderSource = coreFunc->glShaderSource;
+	uiFunc.glCompileShader = coreFunc->glCompileShader;
+	uiFunc.glGetShaderiv = coreFunc->glGetShaderiv;
+	uiFunc.glGetShaderInfoLog = coreFunc->glGetShaderInfoLog;
+	uiFunc.glDeleteShader = coreFunc->glDeleteShader;
+
+	uiFunc.glCreateProgram = coreFunc->glCreateProgram;
+	uiFunc.glAttachShader = coreFunc->glAttachShader;
+	uiFunc.glDetachShader = coreFunc->glDetachShader;
+	uiFunc.glLinkProgram = coreFunc->glLinkProgram;
+	uiFunc.glValidateProgram = coreFunc->glValidateProgram;
+	uiFunc.glUseProgram = coreFunc->glUseProgram;
+	uiFunc.glIsProgram = coreFunc->glIsProgram;
+	uiFunc.glGetProgramiv = coreFunc->glGetProgramiv;
+	uiFunc.glGetProgramInfoLog = coreFunc->glGetProgramInfoLog;
+	uiFunc.glDeleteProgram = coreFunc->glDeleteProgram;
+
+	uiFunc.glGetUniformLocation = coreFunc->glGetUniformLocation;
+	uiFunc.glUniform1i = coreFunc->glUniform1i;
+	uiFunc.glUniform1f = coreFunc->glUniform1f;
+	uiFunc.glUniform1fv = coreFunc->glUniform1fv;
+	uiFunc.glUniform2fv = coreFunc->glUniform2fv;
+	uiFunc.glUniform3fv = coreFunc->glUniform3fv;
+	uiFunc.glUniform4fv = coreFunc->glUniform4fv;
+	uiFunc.glUniformMatrix2fv = coreFunc->glUniformMatrix2fv;
+	uiFunc.glUniformMatrix3fv = coreFunc->glUniformMatrix3fv;
+	uiFunc.glUniformMatrix4fv = coreFunc->glUniformMatrix4fv;
+
+	//textures
+
+	uiFunc.glActiveTexture = coreFunc->glActiveTexture;
+	uiFunc.glGenTextures = coreFunc->glGenTextures;
+	uiFunc.glDeleteTextures = coreFunc->glDeleteTextures;
+	uiFunc.glBindTexture = coreFunc->glBindTexture;
+	uiFunc.glTexParameteri = coreFunc->glTexParameteri;
+	uiFunc.glPixelStorei = coreFunc->glPixelStorei;
+	uiFunc.glTexImage2D = coreFunc->glTexImage2D;
+	uiFunc.glTexSubImage2D = coreFunc->glTexSubImage2D;
+	uiFunc.glTexSubImage3D = coreFunc->glTexSubImage3D;
+	uiFunc.glTexStorage2D = coreFunc->glTexStorage2D;
+	uiFunc.glTexStorage3D = coreFunc->glTexStorage3D;
+	uiFunc.glGenerateMipmap = coreFunc->glGenerateMipmap;
+	uiFunc.glVertexAttribI1i = coreFunc->glVertexAttribI1i;
 
 	OpenGL_Functions_UI::SetGLUI(&uiFunc);
 }
